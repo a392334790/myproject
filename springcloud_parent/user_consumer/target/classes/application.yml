@@ -1,0 +1,50 @@
+server:
+  port: 8082
+spring:
+  application:
+    name: user-consumer
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:7001/eureka
+  instance:
+    ip-address: 127.0.0.1
+    prefer-ip-address: true
+hystrix:
+  command:
+    default:
+      circuitBreaker:
+        #强制打开熔断器，默认为false
+        forceOpen: false
+        #触发熔断错误比例阈值，默认值50%
+        errorThresholdPercentage: 50
+        #熔断后休眠时长，默认值为5秒
+        sleepWindowInMilliseconds: 10000
+        #熔断触发最小请求次数，默认值是20
+        requestVolumeThreshold: 3
+      execution:
+        isolation:
+          thread:
+            #熔断超时设置，默认为1秒
+            timeoutInMilliseconds: 2000
+user-provider:
+  ribbon:
+    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RoundRobinRule
+    connectTimeout: 10000   #连接超时时间
+    ReadTimeout: 2000 #数据读取超时时间
+    MaxAutoRetries: 1   #最大重试次数（第一个服务）
+    MaxAutoRetriesNextServer: 0 #最大重试下一个服务次数（集群的情况才会用到）
+    OkToRetryOnAllOperation: false  #无论是请求超时或者socket read timeout都进行重试
+feign:
+  compression:
+    request:
+      enabled: true #开启请求压缩
+      mime-types: text/html,application/xml,application/json # 设置压缩的数据类型
+      min-request-size: 2048
+    response:
+      enabled: true  #开启响应压缩
+    hystrix:
+     enabled: true #开启feign的熔断功能
+logging:
+  level:
+    com.lwy: debug
